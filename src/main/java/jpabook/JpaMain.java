@@ -15,12 +15,12 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            //testSave(em);
+            testSave(em);
             //queryLogicJoin(em);
             //updateRelation(em);
             //deleteRelation(em);
             //deleteEntity(em);
-            biDirection(em);
+            //biDirection(em);
             tx.commit();
         } catch (Exception e){
             tx.rollback();
