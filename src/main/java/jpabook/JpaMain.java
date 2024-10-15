@@ -15,12 +15,15 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         try{
             tx.begin();
-            testSave(em);
+            //testSave(em);
             //queryLogicJoin(em);
             //updateRelation(em);
             //deleteRelation(em);
             //deleteEntity(em);
             //biDirection(em);
+            //testSaveNonOwner(em);
+            // test순수한객체_양방향();
+            testORM_양방향(em);
             tx.commit();
         } catch (Exception e){
             tx.rollback();
@@ -30,6 +33,7 @@ public class JpaMain {
         }
         emf.close();
     }
+
 
     public static void testSave(EntityManager em){
         Team team1 = new Team("team1","팀1");
@@ -87,5 +91,51 @@ public class JpaMain {
         members.forEach(m->{
             System.out.println("member.username="+m.getUsername());
         });
+    }
+
+    public  static void testSaveNonOwner(EntityManager em) {
+        Member member1 = new Member("member1","회원1");
+        em.persist(member1);
+        Member member2 = new Member("member2","회원2");
+        em.persist(member2);
+
+        Team team1 = new Team("team", "팀1");
+        // 주인이 아닌 곳만 연관관계 설저 ㅇ
+        team1.getMembers().add(member1);
+        team1.getMembers().add(member2);
+
+        em.persist(team1);
+    }
+
+    private static void test순수한객체_양방향(){
+        Team team1 = new Team("team1", "팀1");
+        Member member1 = new Member("mebmer1", "회원1");
+        Member member2 = new Member("mebmer2", "회원2");
+        member1.setTeam(team1); // 연관관계 설정 member1 -> team1
+        team1.getMembers().add(member1); // 연관관계 설정 team1-> member1
+
+        member2.setTeam(team1); // 연관관계 설정 member2 -> team1
+        team1.getMembers().add(member2); // 연관관계설정 team1 -> member2
+
+        List<Member> members = team1.getMembers();
+        System.out.println("members.size = " + members.size());
+    }
+
+    public static void testORM_양방향(EntityManager em){
+        Team team1 = new Team("team1", "팀1");
+        em.persist(team1);
+
+        Member member1 = new Member("mebmer1", "회원1");
+
+        member1.changeTeam(team1);
+        em.persist(member1);
+
+        Member member2 = new Member("mebmer2", "회원2");
+
+        // 양방향 연관관계 설정
+        member2.changeTeam(team1);
+        em.persist(member2);
+
+        System.out.println("member2 = " + member1);
     }
 }
